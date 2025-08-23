@@ -26,35 +26,55 @@ public class ComputerPlayer {
         long startTime = System.nanoTime();
         IsolaMove bestMove = null;
 
-        // Dynamically adjust the max search depth based on the player's mobility
-        int reachableTiles = countReachableTilesInTwoMoves(board, currentPlayer);
-        int effectiveMaxDepth = 2; // Default for early game
-        if (reachableTiles < 24) {
-            effectiveMaxDepth = 3;
-        }
-        if (reachableTiles < 16) {
-            effectiveMaxDepth = 4;
-        }
-        if (reachableTiles < 8) {
-            effectiveMaxDepth = 5; // Deep search for tight situations
-        }
-        // Use the hardcoded maxSearchDepth as a cap
-        if (effectiveMaxDepth > maxSearchDepth) {
-            effectiveMaxDepth = maxSearchDepth;
-        }
-
-        System.out.println("Reachable tiles in 2 moves: " + reachableTiles + ". Effective Max Depth: " + effectiveMaxDepth);
-
+        // First, generate all possible moves. This list is needed for subsequent logic.
         List<IsolaMove> allPossibleMoves = generateAllPossibleMoves(board, currentPlayer);
 
         if (allPossibleMoves.isEmpty()) {
             return null;
         }
 
+        // Now, with the allPossibleMoves list available, we can dynamically adjust the depth and branch factor.
+        int tilesLeft = board.countRemovableTiles();
+        int reachableTiles = countReachableTilesInTwoMoves(board, currentPlayer);
+        int effectiveMaxDepth;
+        int effectiveBranchFactor;
+
+        // Revised Logic for Depth and Branch Factor
+        if (tilesLeft >= 40) { // Early game
+            effectiveMaxDepth = 3;
+            effectiveBranchFactor = 12; // Increased to be more proactive
+        } else if (tilesLeft >= 30) {
+            effectiveMaxDepth = 4;
+            effectiveBranchFactor = 15;
+        } else if (tilesLeft >= 20) {
+            effectiveMaxDepth = 5;
+            effectiveBranchFactor = 20;
+        } else { // Endgame
+            effectiveMaxDepth = maxSearchDepth;
+            effectiveBranchFactor = allPossibleMoves.size();
+        }
+
+        // Adjust based on immediate danger
+        if (reachableTiles < 10) {
+            effectiveMaxDepth += 2; // Add bonus depth if cornered
+        }
+        if (effectiveMaxDepth > maxSearchDepth) {
+            effectiveMaxDepth = maxSearchDepth;
+        }
+
+        System.out.println("Current tiles left: " + tilesLeft + ". Reachable tiles: " + reachableTiles + ". Effective Max Depth: " + effectiveMaxDepth + ". Effective Branch Factor: " + effectiveBranchFactor);
+
+        // Updated sorting heuristic
         allPossibleMoves.sort(Comparator.comparingDouble(move -> {
             int opponentPlayerId = getOpponent(currentPlayer);
             int[] opponentPos = (opponentPlayerId == IsolaBoard.PLAYER1) ? board.getPlayer1Position() : board.getPlayer2Position();
-            return Math.abs(move.removeTileRow - opponentPos[0]) + Math.abs(move.removeTileCol - opponentPos[1]);
+
+            // A good move removes a tile near the opponent, and far from the player
+            double distToOpponent = Math.abs(move.removeTileRow - opponentPos[0]) + Math.abs(move.removeTileCol - opponentPos[1]);
+            double distToPlayer = Math.abs(move.removeTileRow - move.moveToRow) + Math.abs(move.removeTileCol - move.moveToCol);
+
+            // Weighting: High bonus for distance to opponent, small penalty for distance to self
+            return distToOpponent - 0.5 * distToPlayer;
         }));
 
         List<IsolaMove> finalBestMoves = new ArrayList<>();
@@ -65,17 +85,8 @@ public class ComputerPlayer {
 
             final int finalCurrentDepth = currentDepth;
 
-            int remainingTiles = board.countRemovableTiles();
-            int branchFactor = 10;
-            if (remainingTiles < 25) {
-                branchFactor = 15;
-            }
-            if (remainingTiles < 15) {
-                branchFactor = allPossibleMoves.size();
-            }
-
-            List<IsolaMove> movesToEvaluate = allPossibleMoves.size() > branchFactor ?
-                    allPossibleMoves.subList(0, branchFactor) : allPossibleMoves;
+            List<IsolaMove> movesToEvaluate = allPossibleMoves.size() > effectiveBranchFactor ?
+                    allPossibleMoves.subList(0, effectiveBranchFactor) : allPossibleMoves;
 
             List<Future<Double>> futures = new ArrayList<>();
             List<IsolaMove> currentBestMoves = new ArrayList<>();
@@ -115,12 +126,12 @@ public class ComputerPlayer {
                     }
                 }
 
-                if ((currentPlayer == IsolaBoard.PLAYER1 && currentBestValue > finalBestValue) ||
-                        (currentPlayer == IsolaBoard.PLAYER2 && currentBestValue < finalBestValue)) {
+                if (!currentBestMoves.isEmpty()) {
                     finalBestMoves = currentBestMoves;
                     finalBestValue = currentBestValue;
+                } else {
+                    break;
                 }
-
             } catch (InterruptedException | ExecutionException e) {
                 System.err.println("An error occurred during move calculation: " + e.getMessage());
                 break;
@@ -160,7 +171,6 @@ public class ComputerPlayer {
                 int firstMoveRow = currentRow + dr1;
                 int firstMoveCol = currentCol + dc1;
 
-                // Check if first move is valid
                 if (firstMoveRow >= 0 && firstMoveRow < 6 && firstMoveCol >= 0 && firstMoveCol < 8 &&
                         board.isTileEmpty(firstMoveRow, firstMoveCol)) {
 
@@ -172,10 +182,8 @@ public class ComputerPlayer {
                             int secondMoveRow = firstMoveRow + dr2;
                             int secondMoveCol = firstMoveCol + dc2;
 
-                            // Check if second move is valid
                             if (secondMoveRow >= 0 && secondMoveRow < 6 && secondMoveCol >= 0 && secondMoveCol < 8 &&
                                     board.isTileEmpty(secondMoveRow, secondMoveCol)) {
-                                // Add the unique tile to the set
                                 reachableTiles.add(secondMoveRow + "," + secondMoveCol);
                             }
                         }
@@ -248,7 +256,6 @@ public class ComputerPlayer {
             currentCol = board.getPlayer2Position()[1];
         }
 
-        // Iterate over all possible physical moves for the player
         for (int dr = -1; dr <= 1; dr++) {
             for (int dc = -1; dc <= 1; dc++) {
                 if (dr == 0 && dc == 0) continue;
@@ -259,8 +266,6 @@ public class ComputerPlayer {
                 if (newRow >= 0 && newRow < 6 && newCol >= 0 && newCol < 8) {
                     IsolaBoard tempBoardForMoveCheck = board.clone();
                     if (tempBoardForMoveCheck.movePlayer(player, newRow, newCol)) {
-
-                        // For each valid physical move, generate all possible tile removals
                         for (int r = 0; r < 6; r++) {
                             for (int c = 0; c < 8; c++) {
                                 IsolaBoard tempBoardForRemoveCheck = tempBoardForMoveCheck.clone();
