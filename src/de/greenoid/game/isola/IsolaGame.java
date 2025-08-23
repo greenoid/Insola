@@ -1,4 +1,5 @@
-package de.greenoid.game.isola;
+package de.greenoid.IsolaGem;
+
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -14,7 +15,7 @@ public class IsolaGame {
         board = new IsolaBoard();
         currentPlayer = IsolaBoard.PLAYER1;
         scanner = new Scanner(System.in);
-        computerPlayer = new ComputerPlayer(2); // Original 4, dauert zu lange, testweise 2
+        computerPlayer = new ComputerPlayer(2);
     }
 
     public void startGame() {
