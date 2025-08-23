@@ -15,7 +15,7 @@ public class IsolaGame {
         board = new IsolaBoard();
         currentPlayer = IsolaBoard.PLAYER1;
         scanner = new Scanner(System.in);
-        computerPlayer = new ComputerPlayer(2);
+        computerPlayer = new ComputerPlayer(3);
     }
 
     public void startGame() {
@@ -87,6 +87,8 @@ public class IsolaGame {
             switchPlayer();
         }
         scanner.close();
+        // After the game loop ends, shut down the computer player
+        computerPlayer.shutdown();
     }
 
     private void switchPlayer() {

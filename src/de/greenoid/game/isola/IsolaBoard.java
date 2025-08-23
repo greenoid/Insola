@@ -163,13 +163,13 @@ public class IsolaBoard {
     }
 
     public void printBoard() {
-        System.out.println("-------------------------");
+        System.out.println("--------------------------------");
         System.out.print("   ");
         for (int c = 0; c < BOARD_COLS; c++) {
             System.out.print(" " + c + "  ");
         }
         System.out.println();
-        System.out.println("   -------------------------");
+        System.out.println("   --------------------------------");
 
         for (int r = 0; r < BOARD_ROWS; r++) {
             System.out.print(r + " |");
@@ -197,7 +197,7 @@ public class IsolaBoard {
             }
             System.out.println("| " + r);
         }
-        System.out.println("   -------------------------");
+        System.out.println("   --------------------------------");
         System.out.print("   ");
         for (int c = 0; c < BOARD_COLS; c++) {
             System.out.print(" " + c + "  ");
@@ -221,4 +221,31 @@ public class IsolaBoard {
 
         return clonedBoard;
     }
+
+    // IsolaBoard.java
+
+    /**
+     * Counts the number of tiles that can be removed from the board.
+     * This includes TILE, PLAYER1_START, and PLAYER2_START.
+     * @return The number of free tiles.
+     */
+    public int countRemovableTiles() {
+        int count = 0;
+        for (int r = 0; r < BOARD_ROWS; r++) {
+            for (int c = 0; c < BOARD_COLS; c++) {
+                if (board[r][c] == TILE || board[r][c] == PLAYER1_START || board[r][c] == PLAYER2_START) {
+                    count++;
+                }
+            }
+        }
+        // Subtract the two player positions if they are on start fields
+        if (board[player1Row][player1Col] == PLAYER1_START) {
+            count--;
+        }
+        if (board[player2Row][player2Col] == PLAYER2_START) {
+            count--;
+        }
+        return count;
+    }
+
 }
