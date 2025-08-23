@@ -86,18 +86,27 @@ public class IsolaBoard {
     }
 
     public boolean removeTile(int row, int col) {
+        // Check for out-of-bounds access
         if (row < 0 || row >= BOARD_ROWS || col < 0 || col >= BOARD_COLS) {
             return false;
         }
 
+        // A tile cannot be removed if it's currently occupied by a player
         if ((row == player1Row && col == player1Col) || (row == player2Row && col == player2Col)) {
             return false;
         }
 
-        if (board[row][col] == TILE || board[row][col] == PLAYER1_START || board[row][col] == PLAYER2_START) {
+        // A tile cannot be removed if it's one of the starting positions
+        if (board[row][col] == PLAYER1_START || board[row][col] == PLAYER2_START) {
+            return false;
+        }
+
+        // A tile can only be removed if it's a standard TILE
+        if (board[row][col] == TILE) {
             board[row][col] = EMPTY;
             return true;
         } else {
+            // This covers REMOVED tiles and any other invalid state
             return false;
         }
     }
@@ -224,28 +233,40 @@ public class IsolaBoard {
 
     // IsolaBoard.java
 
+// IsolaBoard.java
+
     /**
      * Counts the number of tiles that can be removed from the board.
-     * This includes TILE, PLAYER1_START, and PLAYER2_START.
+     * This includes TILE, but not the starting positions.
      * @return The number of free tiles.
      */
     public int countRemovableTiles() {
         int count = 0;
         for (int r = 0; r < BOARD_ROWS; r++) {
             for (int c = 0; c < BOARD_COLS; c++) {
-                if (board[r][c] == TILE || board[r][c] == PLAYER1_START || board[r][c] == PLAYER2_START) {
+                // Count the normal tiles that are not occupied
+                if (board[r][c] == TILE) {
                     count++;
                 }
             }
         }
-        // Subtract the two player positions if they are on start fields
-        if (board[player1Row][player1Col] == PLAYER1_START) {
-            count--;
-        }
-        if (board[player2Row][player2Col] == PLAYER2_START) {
-            count--;
-        }
         return count;
     }
 
+    // IsolaBoard.java
+
+    public boolean isTileEmpty(int row, int col) {
+        // Check for out-of-bounds
+        if (row < 0 || row >= BOARD_ROWS || col < 0 || col >= BOARD_COLS) {
+            return false;
+        }
+
+        // A tile is empty if it's a TILE, or one of the player's starting positions
+        // that the other player can move to.
+        if (board[row][col] == TILE || board[row][col] == PLAYER1_START || board[row][col] == PLAYER2_START) {
+            return true;
+        }
+
+        return false;
+    }
 }

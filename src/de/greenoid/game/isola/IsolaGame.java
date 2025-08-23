@@ -15,7 +15,7 @@ public class IsolaGame {
         board = new IsolaBoard();
         currentPlayer = IsolaBoard.PLAYER1;
         scanner = new Scanner(System.in);
-        computerPlayer = new ComputerPlayer(3);
+        computerPlayer = new ComputerPlayer(5);
     }
 
     public void startGame() {
