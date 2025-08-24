@@ -8,6 +8,8 @@ import java.util.Random;
 import java.util.concurrent.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Queue;
+import java.util.LinkedList;
 
 public class ComputerPlayer {
 
@@ -299,40 +301,53 @@ public class ComputerPlayer {
     }
 
     /**
-     * Counts the number of tiles a player can reach in up to 3 moves.
+     * Counts the number of tiles a player can reach in up to 3 moves using a BFS.
      * @param board The current board.
      * @param player The player to check.
      * @return The number of reachable tiles.
      */
     private int countOpponentReachableTiles(IsolaBoard board, int player) {
-        Set<String> reachableTiles = new HashSet<>();
+        Set<String> visited = new HashSet<>();
+        Queue<int[]> queue = new LinkedList<>();
+
         int opponentPlayerId = getOpponent(player);
         int[] opponentPos = (opponentPlayerId == IsolaBoard.PLAYER1) ? board.getPlayer1Position() : board.getPlayer2Position();
 
-        // Use a breadth-first search (BFS) to find all reachable tiles up to a depth of 3
-        List<int[]> queue = new ArrayList<>();
+        // Initial position added
+        String startKey = opponentPos[0] + "," + opponentPos[1];
         queue.add(opponentPos);
-        reachableTiles.add(opponentPos[0] + "," + opponentPos[1]);
+        visited.add(startKey);
 
-        int[] currentPos, newPos;
+        int depth = 0;
 
-        // Depth 1
-        for (int[] pos : queue) {
-            for (int dr = -1; dr <= 1; dr++) {
-                for (int dc = -1; dc <= 1; dc++) {
-                    if (dr == 0 && dc == 0) continue;
-                    newPos = new int[]{pos[0] + dr, pos[1] + dc};
-                    if (board.isTileEmpty(newPos[0], newPos[1]) && !reachableTiles.contains(newPos[0] + "," + newPos[1])) {
-                        reachableTiles.add(newPos[0] + "," + newPos[1]);
+        while (!queue.isEmpty() && depth < 3) {
+            int levelSize = queue.size();
+            for (int i = 0; i < levelSize; i++) {
+                int[] currentPos = queue.poll();
+
+                for (int dr = -1; dr <= 1; dr++) {
+                    for (int dc = -1; dc <= 1; dc++) {
+                        if (dr == 0 && dc == 0) continue;
+
+                        int newRow = currentPos[0] + dr;
+                        int newCol = currentPos[1] + dc;
+
+                        String newKey = newRow + "," + newCol;
+
+                        if (newRow >= 0 && newRow < 6 && newCol >= 0 && newCol < 8 &&
+                                board.isTileEmpty(newRow, newCol) && !visited.contains(newKey)) {
+
+                            visited.add(newKey);
+                            queue.add(new int[]{newRow, newCol});
+                        }
                     }
                 }
             }
+            depth++;
         }
 
-        // This method is a simplified, non-recursive way to get a quick count.
-        // A more complex BFS could be implemented for perfect accuracy.
-        // For our purpose, a simple iteration is sufficient to get a good heuristic value.
-        return reachableTiles.size();
+        // Subtract 1 because we don't count the opponent's starting tile as a reachable move.
+        return visited.size() - 1;
     }
 
     private double evaluateBoard(IsolaBoard board, int player) {
@@ -347,6 +362,33 @@ public class ComputerPlayer {
         }
 
         double score = player1Moves - player2Moves;
+
+        // New heuristic: distance to the nearest starting point
+        int[] p1Pos = board.getPlayer1Position();
+        int[] p2Pos = board.getPlayer2Position();
+
+        int[] p1Start = new int[]{0, 3};
+        int[] p2Start = new int[]{5, 4};
+
+        // Calculate distance for Player 1 to both starting points
+        double p1DistToP1Start = Math.abs(p1Pos[0] - p1Start[0]) + Math.abs(p1Pos[1] - p1Start[1]);
+        double p1DistToP2Start = Math.abs(p1Pos[0] - p2Start[0]) + Math.abs(p1Pos[1] - p2Start[1]);
+        double p1DistToNearestStart = Math.min(p1DistToP1Start, p1DistToP2Start);
+
+        // Calculate distance for Player 2 to both starting points
+        double p2DistToP1Start = Math.abs(p2Pos[0] - p1Start[0]) + Math.abs(p2Pos[1] - p1Start[1]);
+        double p2DistToP2Start = Math.abs(p2Pos[0] - p2Start[0]) + Math.abs(p2Pos[1] - p2Start[1]);
+        double p2DistToNearestStart = Math.min(p2DistToP1Start, p2DistToP2Start);
+
+        // A smaller distance is better, so we subtract it from the score for the current player
+        // and add it for the opponent. We use a small factor to not make it the only deciding factor.
+        if (player == IsolaBoard.PLAYER1) {
+            score -= p1DistToNearestStart * 0.1;
+            score += p2DistToNearestStart * 0.1;
+        } else {
+            score -= p2DistToNearestStart * 0.1;
+            score += p1DistToNearestStart * 0.1;
+        }
 
         if (player == IsolaBoard.PLAYER1 && player2Moves == 0) return Double.POSITIVE_INFINITY;
         if (player == IsolaBoard.PLAYER2 && player1Moves == 0) return Double.NEGATIVE_INFINITY;
