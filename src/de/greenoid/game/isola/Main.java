@@ -1,6 +1,4 @@
-package de.greenoid.IsolaGem;
-
-import de.greenoid.IsolaGem.IsolaGame;
+package de.greenoid.game.isola;
 
 /**
  * Main class to start the Isola game.

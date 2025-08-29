@@ -1,4 +1,4 @@
-package de.greenoid.IsolaGem;
+package de.greenoid.game.isola;
 
 public class IsolaBoard {
 
@@ -268,5 +268,57 @@ public class IsolaBoard {
         }
 
         return false;
+    }
+    
+    /**
+     * Get the current board state as a 2D array
+     *
+     * @return 2D array representing the current board state
+     */
+    public int[][] getBoard() {
+        // Return a deep copy to ensure encapsulation
+        int[][] boardCopy = new int[BOARD_ROWS][BOARD_COLS];
+        for (int i = 0; i < BOARD_ROWS; i++) {
+            for (int j = 0; j < BOARD_COLS; j++) {
+                boardCopy[i][j] = this.board[i][j];
+            }
+        }
+        return boardCopy;
+    }
+    
+    /**
+     * Get Player 1's row position
+     *
+     * @return Player 1's row position
+     */
+    public int getPlayer1Row() {
+        return player1Row;
+    }
+    
+    /**
+     * Get Player 1's column position
+     *
+     * @return Player 1's column position
+     */
+    public int getPlayer1Col() {
+        return player1Col;
+    }
+    
+    /**
+     * Get Player 2's row position
+     *
+     * @return Player 2's row position
+     */
+    public int getPlayer2Row() {
+        return player2Row;
+    }
+    
+    /**
+     * Get Player 2's column position
+     *
+     * @return Player 2's column position
+     */
+    public int getPlayer2Col() {
+        return player2Col;
     }
 }

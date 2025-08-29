@@ -1,5 +1,8 @@
-package de.greenoid.IsolaGem;
+package de.greenoid.game.isola;
 
+import de.greenoid.game.isola.GamePhase;
+import de.greenoid.game.isola.GameStatus;
+import de.greenoid.game.isola.IsolaGameState;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -10,12 +13,20 @@ public class IsolaGame {
     private Scanner scanner;
     private ComputerPlayer computerPlayer;
     private final int COMPUTER_PLAYER_ID = IsolaBoard.PLAYER2;
+    
+    // Track the current game phase
+    private GamePhase currentGamePhase;
+    
+    // Track game status
+    private GameStatus gameStatus;
 
     public IsolaGame() {
         board = new IsolaBoard();
         currentPlayer = IsolaBoard.PLAYER1;
         scanner = new Scanner(System.in);
         computerPlayer = new ComputerPlayer(5);
+        currentGamePhase = GamePhase.MOVE_PLAYER;  // Game starts with moving player
+        gameStatus = GameStatus.ONGOING;  // Game starts ongoing
     }
 
     public void startGame() {
@@ -38,13 +49,19 @@ public class IsolaGame {
                     break;
                 }
 
+                // Computer moves player and removes tile
+                currentGamePhase = GamePhase.MOVE_PLAYER;
                 board.movePlayer(currentPlayer, currentMove.moveToRow, currentMove.moveToCol);
+                currentGamePhase = GamePhase.REMOVE_TILE;
                 board.removeTile(currentMove.removeTileRow, currentMove.removeTileCol);
+                currentGamePhase = GamePhase.MOVE_PLAYER;  // Reset for next player
 
                 System.out.println("Computer zieht: " + currentMove);
                 board.printBoard();
 
             } else {
+                // Human player's turn - first move the player
+                currentGamePhase = GamePhase.MOVE_PLAYER;
                 boolean moveSuccessful = false;
                 while (!moveSuccessful) {
                     System.out.println("Figur bewegen (aktuelle Position: P1 bei (" + board.getPlayer1Position()[0] + "," + board.getPlayer1Position()[1] + "))");
@@ -60,6 +77,8 @@ public class IsolaGame {
                 }
                 board.printBoard();
 
+                // Then remove a tile
+                currentGamePhase = GamePhase.REMOVE_TILE;
                 boolean removeSuccessful = false;
                 while (!removeSuccessful) {
                     System.out.println("Spielstein entfernen:");
@@ -74,6 +93,8 @@ public class IsolaGame {
                     }
                 }
                 board.printBoard();
+                // Reset game phase for next player
+                currentGamePhase = GamePhase.MOVE_PLAYER;
             }
 
             int otherPlayer = (currentPlayer == IsolaBoard.PLAYER1) ? IsolaBoard.PLAYER2 : IsolaBoard.PLAYER1;
@@ -81,6 +102,8 @@ public class IsolaGame {
                 System.out.println("\n-------------------------");
                 System.out.println("Spieler " + (otherPlayer == IsolaBoard.PLAYER1 ? "1" : "2") + " ist isoliert!");
                 System.out.println("Spieler " + (currentPlayer == IsolaBoard.PLAYER1 ? "1 (Mensch)" : "2 (Computer)") + " GEWINNT!");
+                // Set game status based on who won
+                gameStatus = (currentPlayer == IsolaBoard.PLAYER1) ? GameStatus.PLAYER1_WON : GameStatus.PLAYER2_WON;
                 break;
             }
 
@@ -105,6 +128,25 @@ public class IsolaGame {
                 System.out.print("Erneut versuchen: ");
             }
         }
+    }
+
+    /**
+     * Returns the current state of the game for UI consumption
+     * @return IsolaGameState object representing the current game state
+     */
+    public IsolaGameState getGameState() {
+        // Create a BoardState object from the current board
+        BoardState currentBoardState = new BoardState(
+            6,  // rows
+            8,  // cols
+            board.getBoard(),
+            board.getPlayer1Row(),
+            board.getPlayer1Col(),
+            board.getPlayer2Row(),
+            board.getPlayer2Col()
+        );
+        
+        return new IsolaGameState(currentPlayer, currentGamePhase, currentBoardState, gameStatus);
     }
 
     public static void main(String[] args) {

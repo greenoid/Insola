@@ -1,6 +1,5 @@
-package de.greenoid.IsolaGem;
+package de.greenoid.game.isola;
 
-// IsolaMove.java
 public class IsolaMove {
 
     // Aktuelle Position der Figur
