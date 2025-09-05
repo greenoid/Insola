@@ -112,20 +112,20 @@ public class BoardPanel extends JPanel {
         
         // Draw cell background
         switch (cellState) {
-            case 0: // EMPTY
-                g.setColor(Color.LIGHT_GRAY);
+            case 0: // EMPTY (removed tile, sea water)
+                g.setColor(Color.BLUE);
                 break;
-            case 1: // TILE
-                g.setColor(Color.WHITE);
+            case 1: // TILE (sand)
+                g.setColor(new Color(255, 255, 224)); // Yellow-beige as sand
                 break;
-            case 2: // PLAYER1_START
-                g.setColor(Color.CYAN);
+            case 2: // PLAYER1_START (brown)
+                g.setColor(new Color(139, 69, 19)); // Brown
                 break;
-            case 3: // PLAYER2_START
-                g.setColor(Color.PINK);
+            case 3: // PLAYER2_START (brown)
+                g.setColor(new Color(139, 69, 19)); // Brown
                 break;
             default:
-                g.setColor(Color.WHITE);
+                g.setColor(new Color(255, 255, 224)); // Yellow-beige as sand
                 break;
         }
         
@@ -147,12 +147,12 @@ public class BoardPanel extends JPanel {
         
         // Draw player positions
         if (boardRow == player1Row && boardCol == player1Col) {
-            g.setColor(Color.BLUE);
+            g.setColor(Color.RED); // Human Player 1 is red
             g.fillOval(x + 10, y + 10, CELL_SIZE - 20, CELL_SIZE - 20);
             g.setColor(Color.WHITE);
             g.drawString("P1", x + 20, y + 35);
         } else if (boardRow == player2Row && boardCol == player2Col) {
-            g.setColor(Color.RED);
+            g.setColor(Color.BLACK); // Computer Player 2 is black
             g.fillOval(x + 10, y + 10, CELL_SIZE - 20, CELL_SIZE - 20);
             g.setColor(Color.WHITE);
             g.drawString("P2", x + 20, y + 35);

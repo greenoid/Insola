@@ -23,8 +23,6 @@ public class SwingGui extends GuiAdapter implements ActionListener {
     private ControlPanel controlPanel;
     
     // Game state tracking
-    private int selectedRow = -1;
-    private int selectedCol = -1;
     private boolean movePhase = true; // true for move phase, false for remove tile phase
     
     /**
@@ -97,46 +95,48 @@ public class SwingGui extends GuiAdapter implements ActionListener {
         IsolaGameState currentState = controller.getGameState();
         
         if (movePhase) {
-            // Move phase - select source and destination
-            if (selectedRow == -1) {
-                // Select source position
-                if (isValidSourcePosition(row, col, currentState)) {
-                    selectedRow = row;
-                    selectedCol = col;
-                    boardPanel.highlightCell(row, col);
-                }
+            // Move phase - directly use clicked position as destination
+            // Automatically determine source as current player's position
+            int player = currentState.getCurrentPlayer();
+            int sourceRow, sourceCol;
+            
+            if (player == IsolaBoard.PLAYER1) {
+                sourceRow = currentState.getBoardState().getPlayer1Row();
+                sourceCol = currentState.getBoardState().getPlayer1Col();
             } else {
-                // Select destination position
-                if (isValidMove(selectedRow, selectedCol, row, col, currentState)) {
-                    // Perform the move
-                    int player = currentState.getCurrentPlayer();
-                    if (controller.movePlayer(player, row, col)) {
-                        // Move successful, now switch to remove tile phase
-                        controller.setCurrentGamePhase(de.greenoid.game.isola.GamePhase.REMOVE_TILE);
-                        movePhase = false;
-                        selectedRow = -1;
-                        selectedCol = -1;
-                        boardPanel.clearHighlight();
+                sourceRow = currentState.getBoardState().getPlayer2Row();
+                sourceCol = currentState.getBoardState().getPlayer2Col();
+            }
+            
+            // Check if the move is valid
+            if (isValidMove(sourceRow, sourceCol, row, col, currentState)) {
+                // Perform the move
+                if (controller.movePlayer(player, row, col)) {
+                    // Move successful, now switch to remove tile phase
+                    controller.setCurrentGamePhase(de.greenoid.game.isola.GamePhase.REMOVE_TILE);
+                    movePhase = false;
+                    boardPanel.clearHighlight();
+                    
+                    // Check if game is over
+                    int otherPlayer = (player == IsolaBoard.PLAYER1) ? IsolaBoard.PLAYER2 : IsolaBoard.PLAYER1;
+                    if (controller.isPlayerIsolated(otherPlayer)) {
+                        // Update the display to show the final state before announcing the winner
+                        updateGameState(controller.getGameState());
                         
-                        // Check if game is over
-                        int otherPlayer = (player == IsolaBoard.PLAYER1) ? IsolaBoard.PLAYER2 : IsolaBoard.PLAYER1;
-                        if (controller.isPlayerIsolated(otherPlayer)) {
-                            String winner = (player == IsolaBoard.PLAYER1) ? "Player 1" : "Player 2";
-                            showMessage(winner + " wins!");
-                            return;
-                        }
-                    } else {
-                        showMessage("Invalid move!");
-                        selectedRow = -1;
-                        selectedCol = -1;
-                        boardPanel.clearHighlight();
+                        // Use SwingUtilities.invokeLater to ensure UI updates are processed first
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                String winner = (player == IsolaBoard.PLAYER1) ? "Player 1" : "Player 2";
+                                showMessage(winner + " wins!");
+                            }
+                        });
+                        return;
                     }
                 } else {
                     showMessage("Invalid move!");
-                    selectedRow = -1;
-                    selectedCol = -1;
-                    boardPanel.clearHighlight();
                 }
+            } else {
+                showMessage("Invalid move!");
             }
         } else {
             // Remove tile phase
@@ -146,10 +146,16 @@ public class SwingGui extends GuiAdapter implements ActionListener {
                     int player = currentState.getCurrentPlayer();
                     int otherPlayer = (player == IsolaBoard.PLAYER1) ? IsolaBoard.PLAYER2 : IsolaBoard.PLAYER1;
                     if (controller.isPlayerIsolated(otherPlayer)) {
-                        String winner = (player == IsolaBoard.PLAYER1) ? "Player 1" : "Player 2";
-                        showMessage(winner + " wins!");
-                        // Update the display to show the final state
+                        // Update the display to show the final state before announcing the winner
                         updateGameState(controller.getGameState());
+                        
+                        // Use SwingUtilities.invokeLater to ensure UI updates are processed first
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                String winner = (player == IsolaBoard.PLAYER1) ? "Player 1" : "Player 2";
+                                showMessage(winner + " wins!");
+                            }
+                        });
                         return;
                     }
                     
@@ -177,16 +183,6 @@ public class SwingGui extends GuiAdapter implements ActionListener {
      * @param state The current game state
      * @return true if the position is a valid source, false otherwise
      */
-    private boolean isValidSourcePosition(int row, int col, IsolaGameState state) {
-        int player = state.getCurrentPlayer();
-        if (player == IsolaBoard.PLAYER1) {
-            return (row == state.getBoardState().getPlayer1Row() &&
-                    col == state.getBoardState().getPlayer1Col());
-        } else {
-            return (row == state.getBoardState().getPlayer2Row() &&
-                    col == state.getBoardState().getPlayer2Col());
-        }
-    }
     
     /**
      * Check if a move is valid.
@@ -286,8 +282,6 @@ public class SwingGui extends GuiAdapter implements ActionListener {
     public void handleNewGame() {
         controller.startNewGame();
         movePhase = true;
-        selectedRow = -1;
-        selectedCol = -1;
         boardPanel.clearHighlight();
         updateGameState(controller.getGameState());
     }
@@ -331,9 +325,15 @@ public class SwingGui extends GuiAdapter implements ActionListener {
                 if (controller.removeTile(move.removeTileRow, move.removeTileCol)) {
                     // Tile removal successful, check if game is over
                     if (controller.isPlayerIsolated(IsolaBoard.PLAYER1)) {
-                        showMessage("Player 2 wins!");
-                        // Update the display to show the final state
+                        // Update the display to show the final state before announcing the winner
                         updateGameState(controller.getGameState());
+                        
+                        // Use SwingUtilities.invokeLater to ensure UI updates are processed first
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                showMessage("Player 2 wins!");
+                            }
+                        });
                         return;
                     }
                     
@@ -343,7 +343,15 @@ public class SwingGui extends GuiAdapter implements ActionListener {
             }
         } else {
             // Computer cannot make a move, human player wins
-            showMessage("Computer cannot make a move! Player 1 wins!");
+            // Update the display to show the final state before announcing the winner
+            updateGameState(controller.getGameState());
+            
+            // Use SwingUtilities.invokeLater to ensure UI updates are processed first
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    showMessage("Computer cannot make a move! Player 1 wins!");
+                }
+            });
         }
         
         // Update the display
