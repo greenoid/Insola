@@ -1,6 +1,10 @@
 package de.greenoid.game.isola;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class IsolaMove {
+    private static final Logger log = LogManager.getLogger(IsolaMove.class);
 
     // Aktuelle Position der Figur
     public final int moveFromRow;

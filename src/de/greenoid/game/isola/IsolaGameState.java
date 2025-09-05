@@ -1,11 +1,15 @@
 package de.greenoid.game.isola;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Class representing the current state of an Isola game for UI consumption.
  * This class encapsulates all necessary information for a UI to display
  * the current game state and determine what actions are available.
  */
 public class IsolaGameState {
+    private static final Logger log = LogManager.getLogger(IsolaGameState.class);
     // Current player who needs to make a move
     private int currentPlayer;
     

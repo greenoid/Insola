@@ -1,12 +1,13 @@
 package de.greenoid.game.isola;
 
-import de.greenoid.game.isola.GamePhase;
-import de.greenoid.game.isola.GameStatus;
-import de.greenoid.game.isola.IsolaGameState;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class IsolaGame {
+    private static final Logger log = LogManager.getLogger(IsolaGame.class);
 
     private IsolaBoard board;
     private int currentPlayer;
@@ -147,6 +148,103 @@ public class IsolaGame {
         );
         
         return new IsolaGameState(currentPlayer, currentGamePhase, currentBoardState, gameStatus);
+    }
+    
+    /**
+     * Move a player to a new position on the board.
+     *
+     * @param player The player to move (IsolaBoard.PLAYER1 or IsolaBoard.PLAYER2)
+     * @param newRow The row to move to
+     * @param newCol The column to move to
+     * @return true if the move was successful, false otherwise
+     */
+    public boolean movePlayer(int player, int newRow, int newCol) {
+        boolean result = board.movePlayer(player, newRow, newCol);
+        
+        // Check if the move resulted in a win
+        if (result) {
+            int otherPlayer = (player == IsolaBoard.PLAYER1) ?
+                             IsolaBoard.PLAYER2 :
+                             IsolaBoard.PLAYER1;
+            if (board.isPlayerIsolated(otherPlayer)) {
+                // Update game status
+                gameStatus = (player == IsolaBoard.PLAYER1) ?
+                            GameStatus.PLAYER1_WON :
+                            GameStatus.PLAYER2_WON;
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Remove a tile from the board.
+     *
+     * @param row The row of the tile to remove
+     * @param col The column of the tile to remove
+     * @return true if the tile was successfully removed, false otherwise
+     */
+    public boolean removeTile(int row, int col) {
+        boolean result = board.removeTile(row, col);
+        
+        // Check if the tile removal resulted in a win
+        if (result) {
+            int otherPlayer = (currentPlayer == IsolaBoard.PLAYER1) ?
+                             IsolaBoard.PLAYER2 :
+                             IsolaBoard.PLAYER1;
+            if (board.isPlayerIsolated(otherPlayer)) {
+                // Update game status
+                gameStatus = (currentPlayer == IsolaBoard.PLAYER1) ?
+                            GameStatus.PLAYER1_WON :
+                            GameStatus.PLAYER2_WON;
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Check if a player is isolated (cannot make any valid move).
+     *
+     * @param player The player to check (IsolaBoard.PLAYER1 or IsolaBoard.PLAYER2)
+     * @return true if the player is isolated, false otherwise
+     */
+    public boolean isPlayerIsolated(int player) {
+        return board.isPlayerIsolated(player);
+    }
+    
+    /**
+     * Switch to the next player's turn.
+     */
+    public void switchToNextPlayer() {
+        switchPlayer();
+    }
+    
+    /**
+     * Get the current game phase.
+     *
+     * @return The current game phase (MOVE_PLAYER or REMOVE_TILE)
+     */
+    public GamePhase getCurrentGamePhase() {
+        return currentGamePhase;
+    }
+    
+    /**
+     * Set the current game phase.
+     *
+     * @param phase The game phase to set (MOVE_PLAYER or REMOVE_TILE)
+     */
+    public void setCurrentGamePhase(GamePhase phase) {
+        this.currentGamePhase = phase;
+    }
+    
+    /**
+     * Get the current game board.
+     *
+     * @return The current game board
+     */
+    public IsolaBoard getBoard() {
+        return board;
     }
 
     public static void main(String[] args) {
