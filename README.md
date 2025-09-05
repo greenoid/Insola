@@ -1,39 +1,92 @@
-**Isola Spiel mit Hilfe von Google Gemini**
+# Isola Game
 
-(c) Frerk Meyer
-12.07.2025
+Isola is a strategic board game for two players. The objective is to isolate your opponent so they cannot make any legal moves.
 
-**Isola Spiel**
+## Features
 
-"Isola" von Ravensburger ist ein strategisches Brettspiel für zwei Personen, bei dem es darum geht, den Gegner bewegungsunfähig zu machen. Der Name "Isola" deutet bereits auf das Ziel hin: den Gegner zu "isolieren".
+- Complete implementation of the Isola board game
+- Computer player with AI opponent
+- Console-based interface
+- Graphical Swing-based interface
+- Clean, extensible architecture
 
-**Spielregeln**
+## Prerequisites
 
-**Spielmaterial:**
-* 1 Spielplan (ein Gitter aus 6x8 Feldern)
-* 46 Spielsteine (Plättchen)
-* 2 Spielfiguren
+- Java 11 or higher
+- Maven 3.6 or higher
 
-**Spielvorbereitung:**
-1.  Die 46 gelben Spielsteine werden in alle Felder des Spielplans außer den beiden Startfeldern eingelegt.
-2.  Die beiden Spielfiguren werden auf ihre jeweiligen Startfelder an den kurzen Seiten des Spielplans gestellt. Diese Startfelder sind besondere, befestigte Felder.
-3.  Die Spieler einigen sich darauf, wer beginnt.
+## Building the Project
 
-**Spielverlauf:**
-Ein Spielzug besteht aus zwei Schritten, die nacheinander ausgeführt werden:
+To build the project, run:
 
-1.  **Figur bewegen:** Der Spieler zieht seine Spielfigur **ein Feld** weiter auf ein benachbartes Feld. Dies kann in jede beliebige Richtung geschehen (vorwärts, rückwärts, seitwärts, diagonal).
-    * Auf einem Feld darf sich immer nur eine Figur befinden.
-    * Die Startfelder (auch das des Gegners) können beliebig oft betreten werden.
-2.  **Spielstein entfernen:** Nachdem die Figur bewegt wurde, entfernt der Spieler einen **beliebigen, unbesetzten** Spielstein vom Plan. Dieser Spielstein fällt dann durch das Gitter und kann nicht mehr betreten werden.
+```bash
+mvn clean package
+```
 
-**Ziel des Spiels:**
-Ziel ist es, den Gegner durch das Entfernen der Spielsteine so zu behindern, dass seine Spielfigur auf einem Feld isoliert wird und keine legalen Züge mehr machen kann.
+This will create a fat JAR file in the `target` directory that includes all dependencies.
 
-**Spielende:**
-Der Spieler, dem es zuerst gelingt, seinen Gegenspieler zu isolieren (d.h. dieser kann seine Figur nicht mehr bewegen), gewinnt das Spiel. Da in jedem Zug ein Spielstein entfernt wird, kann das Spiel maximal 46 Züge dauern.
+## Running the Game
 
-**Strategiehinweise:**
-* Versuchen Sie, den Gegenspieler in Gebieten zu halten, die weniger Spielsteine enthalten.
-* Nutzen Sie Ihre eigene Figur, um die Zugmöglichkeiten des Gegners zu blockieren, aber achten Sie darauf, sich nicht selbst zu isolieren.
-* Da die Startfelder immer wieder betretbar sind, kann es sinnvoll sein, sich in deren Nähe aufzuhalten. Gleichzeitig kann es eine gute Strategie sein, Spielsteine in der Nähe des gegnerischen Startfeldes zu entfernen, um dessen Bewegungsfreiheit einzuschränken.
+### Console Version
+
+To run the console version of the game:
+
+```bash
+java -jar target/IsolaGem-1.0.0.jar
+```
+
+### GUI Version
+
+To run the graphical Swing version of the game:
+
+```bash
+java -jar target/IsolaGem-1.0.0.jar -gui
+```
+
+## How to Play
+
+### Game Setup
+
+- Player 1 (P1) starts in position (5,3) - bottom center
+- Player 2 (P2) starts in position (0,4) - top center
+- All other positions contain removable tiles
+
+### Game Rules
+
+1. Players take turns moving their piece and removing a tile
+2. On each turn, a player must:
+   - Move their piece to an adjacent square (including diagonally)
+   - Remove one tile from the board (cannot be a starting position or occupied square)
+3. A player wins when their opponent cannot make a legal move
+
+### Making Moves in the GUI
+
+1. **Move Phase**: Click on your piece, then click on an adjacent square to move to
+2. **Remove Tile Phase**: Click on any tile to remove it from the board
+3. The game automatically switches between players after each complete turn
+
+## Project Structure
+
+```
+src/
+├── de/greenoid/game/isola/
+│   ├── board/              # Board-related classes
+│   ├── game/               # Main game logic
+│   ├── gui/                # GUI implementation
+│   │   ├── adapter/        # GUI adapter pattern
+│   │   ├── common/         # Common GUI components
+│   │   ├── swing/          # Swing implementation
+│   │   └── web/            # Web GUI plan
+│   └── player/             # Player classes
+└── log4j2.xml              # Logging configuration
+```
+
+## Dependencies
+
+- Log4j 2.20.0 - Logging framework
+- FlatLaf 3.2.5 - Modern Look and Feel for Java Swing
+- MigLayout 11.0 - Layout Manager for Java Swing
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
