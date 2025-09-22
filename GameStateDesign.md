@@ -1,10 +1,10 @@
-# Isola Game State Design for UI Integration
+# Insola Game State Design for UI Integration
 
 ## Overview
-This document describes the design of a data structure that encapsulates the state of an Isola game for UI consumption. The goal is to provide a clean interface that allows UI components (Swing, web-based, etc.) to easily retrieve and display the current game state.
+This document describes the design of a data structure that encapsulates the state of an Insola game for UI consumption. The goal is to provide a clean interface that allows UI components (Swing, web-based, etc.) to easily retrieve and display the current game state.
 
 ## Current Game Flow Analysis
-Based on the analysis of `IsolaGame.java`, the game follows this flow:
+Based on the analysis of `InsolaGame.java`, the game follows this flow:
 1. Display current player
 2. If human player:
    - Move player to a new position

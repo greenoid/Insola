@@ -4,7 +4,7 @@ Isola is a strategic board game for two players. The objective is to isolate you
 
 ## Features
 
-- Complete implementation of the Isola board game
+- Complete implementation of the Insola board game
 - Computer player with AI opponent
 - Console-based interface
 - Graphical Swing-based interface
@@ -32,7 +32,7 @@ This will create a fat JAR file in the `target` directory that includes all depe
 To run the console version of the game:
 
 ```bash
-java -jar target/IsolaGem-1.0.0.jar
+java -jar target/Insola-1.0.0.jar
 ```
 
 ### GUI Version
@@ -40,7 +40,7 @@ java -jar target/IsolaGem-1.0.0.jar
 To run the graphical Swing version of the game:
 
 ```bash
-java -jar target/IsolaGem-1.0.0.jar -gui
+java -jar target/Insola-1.0.0.jar -gui
 ```
 
 ## How to Play

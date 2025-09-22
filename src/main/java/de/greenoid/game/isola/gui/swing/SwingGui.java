@@ -49,7 +49,7 @@ public class SwingGui extends GuiAdapter implements ActionListener {
     
     @Override
     public void updateGameState(IsolaGameState state) {
-        boardPanel.updateBoard(state.getBoardState());
+        boardPanel.updateBoard(state.getBoardState(), state.getGameStatus());
         controlPanel.updateStatus(state);
         
         // Update internal state tracking

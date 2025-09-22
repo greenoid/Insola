@@ -1,11 +1,12 @@
-**Isola Spiel mit Hilfe von A.I.**
+**Insola Spiel mit Hilfe von A.I.**
 
 (c) Frerk Meyer
 12.07.2025
 
-**Isola Spiel**
+**Insola Spiel**
 
-"Isola" von Ravensburger ist ein strategisches Brettspiel für zwei Personen, bei dem es darum geht, den Gegner bewegungsunfähig zu machen. Der Name "Isola" deutet bereits auf das Ziel hin: den Gegner zu "isolieren".
+"Isola" (c) von Ravensburger ist ein strategisches Brettspiel für zwei Personen, bei dem es darum geht, den Gegner bewegungsunfähig zu machen. Der Name "Isola" deutet bereits auf das Ziel hin: den Gegner zu "isolieren".
+Insola ist meine Implementierung der Spielregeln in einem Computerspiel. Ich habe es umbenannt um keine Markenrechte zu verletzen.
 
 **Spielregeln**
 
