@@ -21,6 +21,9 @@
         <includes>
           <include>**/*</include>
         </includes>
+        <excludes>
+          <exclude>tiles/1024px/**</exclude>
+        </excludes>
       </resource>
     </resources>
     <plugins>

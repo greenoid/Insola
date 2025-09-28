@@ -1,10 +1,6 @@
 package de.greenoid.game.isola;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public class IsolaBoard {
-    private static final Logger log = LogManager.getLogger(IsolaBoard.class);
 
     public static final int EMPTY = 0;
     public static final int TILE = 1;

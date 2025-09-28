@@ -1,13 +1,9 @@
 package de.greenoid.game.isola;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 /**
  * Represents the state of an Isola game board for UI rendering
  */
 public class BoardState {
-    private static final Logger log = LogManager.getLogger(BoardState.class);
     private int rows;
     private int cols;
     private int[][] board;

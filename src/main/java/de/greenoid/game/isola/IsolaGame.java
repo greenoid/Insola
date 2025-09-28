@@ -3,11 +3,7 @@ package de.greenoid.game.isola;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public class IsolaGame {
-    private static final Logger log = LogManager.getLogger(IsolaGame.class);
 
     private IsolaBoard board;
     private int currentPlayer;

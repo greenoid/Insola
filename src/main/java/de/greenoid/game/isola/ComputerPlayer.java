@@ -10,11 +10,7 @@ import java.util.Set;
 import java.util.Queue;
 import java.util.LinkedList;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public class ComputerPlayer {
-    private static final Logger log = LogManager.getLogger(ComputerPlayer.class);
 
     private int maxSearchDepth;
     private Random random;
