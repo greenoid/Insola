@@ -21,19 +21,6 @@
         <mainClass>de.greenoid.game.isola.Main</mainClass>
     </properties>
     <dependencies>
-        <!-- FlatLaf - Modern Look and Feel for Java Swing -->
-        <dependency>
-            <groupId>com.formdev</groupId>
-            <artifactId>flatlaf</artifactId>
-            <version>3.2.5</version>
-        </dependency>
-
-        <!-- MigLayout - Layout Manager for Java Swing -->
-        <dependency>
-            <groupId>com.miglayout</groupId>
-            <artifactId>miglayout-swing</artifactId>
-            <version>11.0</version>
-        </dependency>
         <!-- Log4j Core -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -63,6 +50,9 @@
                 <includes>
                     <include>**/*</include>
                 </includes>
+                <excludes>
+                    <exclude>tiles/1024px/**</exclude>
+                </excludes>
             </resource>
         </resources>
         <plugins>
