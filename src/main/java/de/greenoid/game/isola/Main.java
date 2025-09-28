@@ -16,11 +16,14 @@ public class Main {
      * @param args Command line arguments (not used).
      */
     public static void main(String[] args) {
-        // Check if GUI mode is requested
-        boolean guiMode = false;
+        // Check if GUI mode is requested (GUI is now default)
+        boolean guiMode = true;
         for (String arg : args) {
             if ("-gui".equals(arg)) {
                 guiMode = true;
+                break;
+            } else if ("-console".equals(arg)) {
+                guiMode = false;
                 break;
             }
         }
