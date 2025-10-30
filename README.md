@@ -2,6 +2,8 @@
 
 Isola is a strategic board game for two players. The objective is to isolate your opponent so they cannot make any legal moves.
 
+![Insola Game Screenshot](/Isola_screenshot.png)
+
 ## Features
 
 - Complete implementation of the Insola board game
