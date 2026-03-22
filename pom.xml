@@ -12,7 +12,13 @@
 
     <name>Isola Game</name>
     <description>Isola board game implementation with computer player</description>
-    <url>https://github.com/greenoid/Insola/</url>
+
+    <scm>
+        <connection>scm:git:https://github.com/greenoid/Insola.git</connection>
+        <developerConnection>scm:git:https://github.com/greenoid/Insola.git</developerConnection>
+        <url>https://github.com/greenoid/Insola</url>
+        <tag>HEAD</tag>
+    </scm>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
