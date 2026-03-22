@@ -11,9 +11,10 @@ on:
         description: 'Next development version (e.g., 1.1.0) - leave empty for automatic'
         required: false
         default: ''
-
 permissions:
   contents: write
+  packages: write
+
 
 jobs:
   release:
@@ -84,6 +85,20 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        # Create settings.xml with GitHub authentication if it doesn't exist yet
+        if [ ! -f ~/.m2/settings.xml ]; then
+          mkdir -p ~/.m2
+          echo "<settings>
+            <servers>
+              <server>
+                <id>github</id>
+                <username>${GITHUB_ACTOR}</username>
+                <password>${GITHUB_TOKEN}</password>
+              </server>
+            </servers>
+          </settings>" > ~/.m2/settings.xml
+        fi
+        
         mvn -B release:prepare \
           -DreleaseVersion=${{ steps.versions.outputs.release_version }} \
           -DdevelopmentVersion=${{ steps.versions.outputs.next_version }} \
@@ -95,6 +110,18 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        # Create settings.xml with GitHub authentication
+        mkdir -p ~/.m2
+        echo "<settings>
+          <servers>
+            <server>
+              <id>github</id>
+              <username>${GITHUB_ACTOR}</username>
+              <password>${GITHUB_TOKEN}</password>
+            </server>
+          </servers>
+        </settings>" > ~/.m2/settings.xml
+        
         mvn -B release:perform \
           -Darguments="-DskipTests"
     
