@@ -1,6 +1,7 @@
-# Isola Game
+# Insola Game
 
-Isola is a strategic board game for two players. The objective is to isolate your opponent so they cannot make any legal moves.
+Insola is a strategic board game for two players. The objective is to isolate your opponent so they cannot make any legal moves.
+It's a Java implementation of the classic Isola board game from Ravensburger, Germany, with both console and graphical interfaces.
 
 ![Insola Game Screenshot](/Isola_screenshot.png)
 
@@ -14,7 +15,7 @@ Isola is a strategic board game for two players. The objective is to isolate you
 
 ## Prerequisites
 
-- Java 11 or higher
+- Java 21 or higher
 - Maven 3.6 or higher
 
 ## Building the Project
